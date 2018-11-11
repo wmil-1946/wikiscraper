@@ -1,0 +1,381 @@
+kkl-parse-pages:
+  pipeline:
+  - run: parse_kkl
+    parameters:
+      pipeline-id: kkl-parse-pages
+      pipeline-parameters: kkl-parameters.csv
+  - run: dump.to_path
+    parameters:
+      # TODO: provide this value from kkl-parameters.csv
+      out-path: data/kkl/metadata
+  - run: pipeline_logs
+    parameters:
+      pipeline-id: kkl-parse-pages
+      pipeline-parameters: kkl-parameters.csv
+      pipeline-log: kkl-log.csv
+
+kkl-download-images:
+  pipeline:
+  - run: load_resource
+    parameters:
+      # TODO: provide this value from kkl-parameters.csv
+      url: data/kkl/metadata/datapackage.json
+      resource: kkl
+  - run: stream_remote_resources
+  - run: download_kkl_images
+    parameters:
+      pipeline-id: kkl-download-images
+      pipeline-parameters: kkl-parameters.csv
+  - run: dump.to_path
+    parameters:
+      # TODO: provide this value from kkl-parameters.csv
+      out-path: data/kkl/images
+  - run: pipeline_logs
+    parameters:
+      pipeline-id: kkl-download-images
+      pipeline-parameters: kkl-parameters.csv
+      pipeline-log: kkl-log.csv
+
+kkl-filter-export:
+  pipeline:
+  - run: load_resource
+    parameters:
+      # TODO: provide this value from kkl-parameters.csv
+      url: data/kkl/metadata/datapackage.json
+      resource: kkl
+  - run: stream_remote_resources
+  - run: kkl_filter_export
+    parameters:
+      pipeline-id: kkl-filter-export
+      pipeline-parameters: kkl-parameters.csv
+  - run: dump.to_path
+    parameters:
+      # TODO: provide this value from kkl-parameters.csv
+      out-path: data/kkl/export-images
+  - run: pipeline_logs
+    parameters:
+      pipeline-id: kkl-filter-export
+      pipeline-parameters: kkl-parameters.csv
+      pipeline-log: kkl-log.csv
+
+kkl-extended-metadata:
+  pipeline:
+  - run: load_resource
+    parameters:
+      url: data/kkl/metadata/datapackage.json
+      resource: kkl
+  - run: kkl_extended_metadata
+    parameters:
+      pipeline-id: kkl-extended-metadata
+      pipeline-parameters: kkl-parameters.csv
+  - run: dump.to_path
+    parameters:
+      # TODO: provide this value from kkl-parameters.csv
+      out-path: data/kkl/extended-metadata
+  - run: pipeline_logs
+    parameters:
+      pipeline-id: kkl-extended-metadata
+      pipeline-parameters: kkl-parameters.csv
+      pipeline-log: kkl-log.csv
+
+kkl-wikicommons-upload:
+  pipeline:
+  - run: load_resource
+    parameters:
+      url: final-data/kkl/extended-metadata/datapackage.json
+      resource: kkl
+  - run: kkl_wikicommons_upload
+    parameters:
+      pipeline-id: kkl-wikicommons-upload
+      pipeline-parameters: kkl-parameters.csv
+  - run: dump.to_path
+    parameters:
+      out-path: data/kkl/wikicommons-upload
+  - run: pipeline_logs
+    parameters:
+      pipeline-id: kkl-wikicommons-upload
+      pipeline-parameters: kkl-parameters.csv
+      pipeline-log: kkl-log.csv
+
+
+
+# this needs some more work, not sure if it's worth it
+#arc-exhibition-download:
+#  pipeline:
+#  - run: load_arc_exhibition_page
+#    parameters:
+#      url: "http://www.archives.gov.il/exhibition/מסביב-יהום-הסער"
+#  - run: dump.to_path
+#    parameters:
+#      out-path: data/arc
+#  - run: pipeline_logs
+
+arc-search-ajax-download:
+  pipeline:
+  - run: load_arc_search_page
+    parameters:
+      pipeline-id: arc-search-ajax-download
+      pipeline-parameters: arc-parameters.csv
+  - run: dump.to_path
+    parameters:
+      # TODO: provide this value from kkl-parameters.csv
+      out-path: data/arc/search2
+  - run: pipeline_logs
+    parameters:
+      pipeline-id: arc-search-ajax-download
+      pipeline-parameters: arc-parameters.csv
+      pipeline-log: arc-log.csv
+
+arc-download-images:
+  pipeline:
+  - run: load_resource
+    parameters:
+      # TODO: provide this value from kkl-parameters.csv
+      url: data/arc/search2/datapackage.json
+      resource: arc
+  - run: stream_remote_resources
+  - run: download_arc_images
+    parameters:
+      pipeline-id: arc-download-images
+      pipeline-parameters: arc-parameters.csv
+  - run: dump.to_path
+    parameters:
+      # TODO: provide this value from arc-parameters.csv
+      out-path: data/arc/images2
+  - run: pipeline_logs
+    parameters:
+      pipeline-id: arc-download-images
+      pipeline-parameters: arc-parameters.csv
+      pipeline-log: arc-log.csv
+
+arc-extended-metadata:
+  pipeline:
+  - run: load_resource
+    parameters:
+      url: data/arc/images/datapackage.json
+      resource: arc
+  - run: load_resource
+    parameters:
+      url: data/arc/images2/datapackage.json
+      resource: arc
+  - run: concatenate
+    parameters:
+      fields:
+        archiveId: []
+        archiveName: []
+        archive_objectReference: []
+        objectId: []
+        name: []
+        descriptionHtml: []
+        descriptionText: []
+        objectReference: []
+        objectUrl: []
+        attachmentUrl: []
+        object_shemMekoriHe: []
+        objectDatingStart: []
+        objectDatingEnd: []
+        objectDescription: []
+        objectDescriptionName: []
+        gcs_url: []
+  - run: join
+    parameters:
+      source:
+        name: concat
+        key: ["gcs_url"]
+        delete: true
+      target:
+        name: joined
+        key: null
+      fields:
+        archiveId:
+        archiveName:
+        archive_objectReference:
+        objectId:
+        name:
+        descriptionHtml:
+        descriptionText:
+        objectReference:
+        objectUrl:
+        attachmentUrl:
+        object_shemMekoriHe:
+        objectDatingStart:
+        objectDatingEnd:
+        objectDescription:
+        objectDescriptionName:
+        gcs_url:
+  - run: arc_extended_metadata
+    parameters:
+      pipeline-id: arc-extended-metadata
+      pipeline-parameters: arc-parameters.csv
+  - run: dump.to_path
+    parameters:
+      # TODO: provide this value from arc-parameters.csv
+      out-path: data/arc/extended-metadata2
+  - run: pipeline_logs
+    parameters:
+      pipeline-id: arc-extended-metadata
+      pipeline-parameters: arc-parameters.csv
+      pipeline-log: arc-log.csv
+
+arc-dump-to-html:
+  pipeline:
+  - run: add_resource
+    parameters:
+      name: final_data
+      url: final-data/arc/extended-metadata2-filtered-columns.csv
+      headers: 1
+      format: csv
+  - run: stream_remote_resources
+  - run: arc_dump_to_html
+    parameters:
+      out-path: final-data/arc/index.html
+
+arc-cleanup-final-data:
+  pipeline:
+  - run: add_resource
+    parameters:
+      name: final_data
+      url: final-data/arc/invalid_item_ids.csv
+      headers: 1
+      format: csv
+  - run: add_resource
+    parameters:
+      name: final_data
+      url: final-data/arc/extended-metadata2-filtered-columns.csv
+      headers: 1
+      format: csv
+  - run: stream_remote_resources
+  - run: arc_cleanup_final_data
+  - run: dump.to_path
+    parameters:
+      out-path: final-data/arc/final_data_apr2018
+
+msh-parse:
+  pipeline:
+  - run: msh_parse
+  - run: dump.to_path
+    parameters:
+      out-path: data/msh/msh-parse
+
+arc-parse-albums:
+  pipeline:
+  - run: load_resource
+    parameters:
+      url: final-data/arc/final_data_apr2018/datapackage.json
+      resource: final_data
+  - run: arc_parse_albums
+  - run: dump.to_path
+    parameters:
+      out-path: data/arc/parse_albums
+
+arc-join-albums:
+  pipeline:
+  - run: load_resource
+    parameters:
+      url: final-data/arc/final_data_apr2018/datapackage.json
+      resource: final_data
+  - run: rename_resource
+    parameters: {src: final_data, dst: parents}
+  - run: load_resource
+    parameters:
+      url: data/arc/parse_albums/datapackage.json
+      resource: final_data
+  - run: rename_resource
+    parameters: {src: final_data, dst: children}
+  - run: arc_join_albums
+  - run: dump.to_path
+    parameters:
+      out-path: data/arc/join_albums
+
+arc-get-missing-photos-2:
+  pipeline:
+  - run: load_resource
+    parameters:
+      url: final-data/arc/get_missing_photos/datapackage.json
+      resource: arc
+  - run: add_resource
+    parameters:
+      name: albums
+      url: final-data/arc/joined_albums-modified-1jul-2018.csv
+  - run: stream_remote_resources
+  - run: arc_get_missing_photos
+    parameters:
+      # missing-photo: arc-missing-image.jpg
+      missing-photo: arc-missing-image-2.jpg
+  - run: dump.to_path
+    parameters:
+      out-path: data/arc/get_missing_photos_2
+
+zio-scrape:
+  pipeline:
+  - run: zio_scrape
+    parameters:
+      url: 'http://www.zionistarchives.org.il/Pages/AdvancedSearch.aspx?ts=archive&as={%22date_year%22:%22__YEAR__%22}&t=cza_photo&v=&p=__PAGE_NUMBER__'
+#      year-from: 1900
+#      year-to: 1902
+#      page-from: 1
+#      page-to: 2
+  - run: dump.to_path
+    parameters:
+      out-path: data/zio/scrape
+
+zio-scrape-details:
+  pipeline:
+  - run: load_resource
+    parameters:
+      url: data/zio/scrape/datapackage.json
+      resource: zio
+#      limit-rows: 10
+  - run: zio_scrape_details
+    parameters:
+      details_url_prefix: http://www.zionistarchives.org.il/Pages/
+  - run: dump.to_path
+    parameters:
+      out-path: data/zio/scrape_details
+
+zio-download-images:
+  pipeline:
+  - run: load_resource
+    parameters:
+      url: final-data/zio/scrape_details/datapackage.json
+      resource: zio_details
+#      limit-rows: 2
+  - run: zio_download_images
+    parameters:
+      image_url_prefix: http://www.zionistarchives.org.il
+  - run: dump.to_path
+    parameters:
+      out-path: data/zio/download_images
+      handle-non-tabular: true
+
+zio-download-thumbnails:
+  pipeline:
+  - run: load_resource
+    parameters:
+      url: final-data/zio/scrape_details/datapackage.json
+      resource: zio_details
+  - run: zio_download_images
+    parameters:
+      download-thumbnails: true
+      missing-image: zio-missing-image.png
+      file-path-template: data/zio/download_images/files/rownum_{rownum}.png
+      max-year: 1947
+  - run: dump.to_path
+    parameters:
+      out-path: data/zio/download_thumbnails
+      handle-non-tabular: true
+
+zio-images-package:
+  pipeline:
+  - run: load_resource
+    parameters:
+      url: final-data/zio/scrape_details/datapackage.json
+      resource: zio_details
+  - run: zio_images_package
+    parameters:
+      file-path-template: data/zio/download_images/files/rownum_{rownum}.png
+      missing-image: zio-missing-image.png
+      out-path: data/zio/images_package/files/
+  - run: dump.to_path
+    parameters:
+      out-path: data/zio/images_package

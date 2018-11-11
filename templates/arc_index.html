@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<head>
+    <meta charset="utf-8">
+</head>
+<body dir="rtl">
+{% for image in images %}
+    <div style="display:inline-block;border:1px solid black;">
+        <img src="{{ image.attachmentUrl }}" width="300" height="200"/><br/>
+        <small>{{ image.archiveName }} | {{ image.archive_objectReference }}</small>
+    </div>
+{% endfor %}
+</body>

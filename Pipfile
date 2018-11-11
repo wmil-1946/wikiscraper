@@ -1,0 +1,24 @@
+[[source]]
+verify_ssl = true
+name = "pypi"
+url = "https://pypi.python.org/simple"
+
+[dev-packages]
+
+[packages]
+selenium = "==3.0.2"
+ipdb = "*"
+pyquery = "*"
+google-api-python-client = "*"
+google-cloud-storage = "*"
+pillow = "*"
+"beautifulsoup4" = "*"
+pywikibot = "*"
+python-hebrew-numbers = "*"
+datapackage-pipelines = "*"
+dataflows = "*"
+jupyter = "*"
+jupyterlab = "*"
+
+[requires]
+python_version = "3.6"
