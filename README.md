@@ -34,6 +34,32 @@ pipenv install
 
 ## Usage
 
+### Collector
+
+```bash
+pipenv shell
+python ./collector.py --help
+
+usage: collector.py [-h] [--sleep [SLEEP]] [--start-date START_DATE]
+                    [--end-date END_DATE] [--max_images [MAX_IMAGES]]
+                    [--start-image [START_IMAGE]] [--recreate] [--leave-open]
+
+WikiScraper - a public domain image collector
+
+optional arguments:
+  -h, --help            show this help message and exit
+  --sleep [SLEEP]       seconds to sleep between each command
+  --start-date START_DATE
+                        date range to search, start date. format yyyymmdd
+  --end-date END_DATE   date range to search, end date. format yyyymmdd
+  --max_images [MAX_IMAGES]
+                        max number of images to collect
+  --start-image [START_IMAGE]
+                        start collection with image of given number.
+  --recreate            rewrite metadata if set. otherwise, append
+  --leave-open          leave the page open after done.
+```
+
 ### Pipelines
 
 Each scraper parses a parameters csv file (`kkl-parameters.csv` / `arc-parameters.csv`) and creates a corresponding log csv file
