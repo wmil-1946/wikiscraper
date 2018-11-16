@@ -149,3 +149,22 @@ Run upload of arc albums
 ```
 pipenv run ./arc_albums_wikicommons_upload.py --cli upload
 ```
+
+## Using Jupyter notebook
+
+The .ipynb files are Jupyte notebooks, to run them -
+
+Create and activate the virtualenv using [pipenv](https://pipenv.readthedocs.io/en/latest/)
+
+```
+pipenv install
+pipenv shell
+```
+
+Start Jupyter lab
+
+```
+jupyter lab
+```
+
+Open and execute the .ipynb files

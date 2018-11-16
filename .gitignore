@@ -86,3 +86,4 @@ throttle.ctrl
 *-parameters.csv
 Pipfile.lock
 user-config.py
+.checkpoints
