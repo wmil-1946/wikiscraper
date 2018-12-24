@@ -87,3 +87,4 @@ throttle.ctrl
 Pipfile.lock
 user-config.py
 .checkpoints
+.env
