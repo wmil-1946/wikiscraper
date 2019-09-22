@@ -13,7 +13,7 @@ def download_item_page(session, url):
     print('downloading {} after sleep of {} seconds'.format(url, sleeptime))
     time.sleep(sleeptime)
     r = session.get(url)
-    if 'window.rbzid=' in r.text:
+    if 'window.rbz' in r.text:
         print('rbz block detected, attempting render')
         r.html.render(wait=5, sleep=5)
         raise Exception()
